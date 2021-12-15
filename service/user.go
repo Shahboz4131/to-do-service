@@ -7,9 +7,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/Shahboz4131/template-service/genproto"
-	l "github.com/Shahboz4131/template-service/pkg/logger"
-	"github.com/Shahboz4131/template-service/storage"
+	pb "github.com/Shahboz4131/to-do-service/genproto"
+	l "github.com/Shahboz4131/to-do-service/pkg/logger"
+	"github.com/Shahboz4131/to-do-service/storage"
 )
 
 // UserService is an object that implements user interface.
@@ -57,7 +57,6 @@ func (s *TaskService) Create(ctx context.Context, req *pb.Task) (*pb.Task, error
 	}
 
 	return &task, nil
-
 }
 
 func (s *TaskService) Get(ctx context.Context, req *pb.ByIdReq) (*pb.Task, error) {
@@ -137,7 +136,6 @@ func (s *TaskService) Delete(ctx context.Context, req *pb.ByIdReq) (*pb.EmptyRes
 }
 
 func (s *TaskService) Overdue(ctx context.Context, req *pb.OverdueReq) (*pb.OverdueResp, error) {
-
 	tasks, count, err := s.storage.Task().Overdue(req.Timed, req.Limit, req.Page)
 	if err != nil {
 		s.logger.Error("failed to list tasks", l.Error(err))

@@ -5,7 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	pb "github.com/Shahboz4131/template-service/genproto"
+	pb "github.com/Shahboz4131/to-do-service/genproto"
 )
 
 // type userRepo struct {

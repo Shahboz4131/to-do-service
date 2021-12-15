@@ -3,13 +3,13 @@ package main
 import (
 	"net"
 
-	"google.golang.org/grpc"
+	"github.com/Shahboz4131/to-do-service/config"
+	pb "github.com/Shahboz4131/to-do-service/genproto"
+	"github.com/Shahboz4131/to-do-service/pkg/db"
+	"github.com/Shahboz4131/to-do-service/pkg/logger"
+	"github.com/Shahboz4131/to-do-service/service"
 
-	"github.com/Shahboz4131/template-service/config"
-	pb "github.com/Shahboz4131/template-service/genproto"
-	"github.com/Shahboz4131/template-service/pkg/db"
-	"github.com/Shahboz4131/template-service/pkg/logger"
-	"github.com/Shahboz4131/template-service/service"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 

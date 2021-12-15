@@ -1,4 +1,4 @@
-module github.com/Shahboz4131/template-service
+module github.com/Shahboz4131/to-do-service
 
 go 1.16
 
