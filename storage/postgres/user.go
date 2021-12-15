@@ -8,18 +8,9 @@ import (
 	pb "github.com/Shahboz4131/to-do-service/genproto"
 )
 
-// type userRepo struct {
-// 	db *sqlx.DB
-// }
-
 type taskRepo struct {
 	db *sqlx.DB
 }
-
-// NewUserRepo ...
-// func NewUserRepo(db *sqlx.DB) *userRepo {
-// 	return &userRepo{db: db}
-// }
 
 // NewTaskRepo ...
 func NewTaskRepo(db *sqlx.DB) *taskRepo {

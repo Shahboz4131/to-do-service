@@ -35,8 +35,6 @@ func main() {
 		log.Fatal("sqlx connection to postgres error", logger.Error(err))
 	}
 
-	// taskService := service.NewTaskService(connDB, log)
-
 	pgStorage := storage.NewStoragePg(connDB)
 
 	taskService := service.NewTaskService(pgStorage, log)
