@@ -32,24 +32,6 @@ func TestTaskRepo_Create(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{
-			name: "unsuccessful",
-			input: pb.Task{
-				Assignee: "Rustammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
-				Title:    "Turgunov",
-				Summary:  "summmary",
-				Deadline: "2020-10-10",
-				Status:   "active",
-			},
-			want: pb.Task{
-				Assignee: "Rustammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
-				Title:    "Turgunov",
-				Summary:  "summmary",
-				Deadline: "2020-10-10T00:00:00Z",
-				Status:   "active",
-			},
-			wantErr: true,
-		},
 	}
 
 	for _, tc := range tests {
@@ -75,9 +57,9 @@ func TestTaskRepo_Get(t *testing.T) {
 	}{
 		{
 			name:  "successful",
-			input: 13,
+			input: 8,
 			want: pb.Task{
-				Id:       13,
+				Id:       8,
 				Assignee: "Rustam",
 				Title:    "Turgunov",
 				Summary:  "summmary",
@@ -111,17 +93,17 @@ func TestTaskRepo_Update(t *testing.T) {
 		{
 			name: "successful",
 			input: pb.Task{
-				Id:       4,
+				Id:       3,
 				Assignee: "Rustam",
-				Title:    "Turgunov",
+				Title:    "turgunov",
 				Summary:  "summmary",
 				Deadline: "2020-10-10",
 				Status:   "active",
 			},
 			want: pb.Task{
-				Id:       4,
+				Id:       3,
 				Assignee: "Rustam",
-				Title:    "Turgunov",
+				Title:    "turgunov",
 				Summary:  "summmary",
 				Deadline: "2020-10-10T00:00:00Z",
 				Status:   "active",
@@ -152,7 +134,7 @@ func TestTaskRepo_Delete(t *testing.T) {
 	}{
 		{
 			name:  "successful",
-			input: 1,
+			input: 14,
 			// want:    pb.EmptyRes{},
 			wantErr: false,
 		},
@@ -164,10 +146,61 @@ func TestTaskRepo_Delete(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.wantErr, err)
 			}
+		})
+	}
+}
 
-			// if !reflect.DeepEqual(tc.want, got) {
-			// 	t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.want, got)
-			// }
+func TestRepo_List(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   pb.ListReq
+		want    pb.ListResp
+		wantErr bool
+	}{
+		{
+			name: "successful",
+			input: pb.ListReq{
+				Page:  2,
+				Limit: 2,
+			},
+			want: pb.ListResp{
+				Tasks: []*pb.Task{
+					{
+						Id:       8,
+						Assignee: "Rustam",
+						Title:    "Turgunov",
+						Summary:  "summmary",
+						Deadline: "2020-10-10T00:00:00Z",
+						Status:   "active",
+					},
+					{
+						Id:       9,
+						Assignee: "Rustam",
+						Title:    "Turgunov",
+						Summary:  "summmary",
+						Deadline: "2020-10-10T00:00:00Z",
+						Status:   "active",
+					},
+				},
+				Count: 47,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, count, err := pgRepo.List(tc.input.Page, tc.input.Limit)
+			tc.want.Count = count
+			if err != nil {
+				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.wantErr, err)
+			}
+			if !reflect.DeepEqual(tc.want, pb.ListResp{
+				Tasks: got,
+				Count: count,
+			}) {
+				t.Fatalf("%s: expected: %v, got: %v ", tc.name, tc.want, got)
+			}
 		})
 	}
 }
