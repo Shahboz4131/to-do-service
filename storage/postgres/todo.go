@@ -38,7 +38,7 @@ func (r *taskRepo) Get(id int64) (pb.Task, error) {
 	var task pb.Task
 	err := r.db.QueryRow(`
         SELECT id, assignee, title, summary, deadline, status FROM tasks
-        WHERE id=$1`, id).Scan(&task.Id, &task.Assignee, &task.Title, &task.Summary, &task.Deadline, &task.Status)
+        WHERE id=$1 and deleted_at is null`, id).Scan(&task.Id, &task.Assignee, &task.Title, &task.Summary, &task.Deadline, &task.Status)
 	if err != nil {
 		return pb.Task{}, err
 	}
@@ -48,9 +48,8 @@ func (r *taskRepo) Get(id int64) (pb.Task, error) {
 
 func (r *taskRepo) List(page, limit int64) ([]*pb.Task, int64, error) {
 	offset := (page - 1) * limit
-	// offset := (page - 1) * limit
 	rows, err := r.db.Queryx(
-		`SELECT id, assignee, title, summary, deadline, status FROM tasks  OFFSET $1  LIMIT $2`,
+		`SELECT id, assignee, title, summary, deadline, status FROM tasks OFFSET $1  LIMIT $2`,
 		offset, limit)
 	if err != nil {
 		return nil, 0, err
@@ -59,30 +58,14 @@ func (r *taskRepo) List(page, limit int64) ([]*pb.Task, int64, error) {
 		return nil, 0, err
 	}
 	defer rows.Close() // nolint:errcheck
-	// rows, err := r.db.Queryx(
-	// 	`SELECT id, first_name, last_name FROM users LIMIT $1 OFFSET $2`,
-	// 	limit, offset)
-	// if err != nil {
-	// 	return nil, 0, err
-	// }
-	// if err = rows.Err(); err != nil {
-	// 	return nil, 0, err
-	// }
-	// defer rows.Close() // nolint:errcheck
 
 	var (
 		tasks []*pb.Task
 		count int64
 	)
 
-	// var (
-	// 	users []*pb.User
-	// 	user  pb.User
-	// 	count int64
-	// )
-
 	for rows.Next() {
-		var task  pb.Task
+		var task pb.Task
 		err = rows.Scan(&task.Id, &task.Assignee, &task.Title, &task.Summary, &task.Deadline, &task.Status)
 		if err != nil {
 			return nil, 0, err
@@ -90,28 +73,11 @@ func (r *taskRepo) List(page, limit int64) ([]*pb.Task, int64, error) {
 		tasks = append(tasks, &task)
 	}
 
-	// for rows.Next() {
-	// 	err = rows.Scan(&user.Id, &user.FirstName, &user.LastName)
-	// 	if err != nil {
-	// 		return nil, 0, err
-	// 	}
-	// 	users = append(users, &user)
-	// }
-
-	err = r.db.QueryRow(`SELECT count(*) FROM tasks`).Scan(&count)
+	err = r.db.QueryRow(`SELECT count(id) FROM tasks`).Scan(&count)
 	if err != nil {
 		return nil, 0, err
 	}
-
-	// err = r.db.QueryRow(`SELECT count(*) FROM users`).Scan(&count)
-	// if err != nil {
-	// 	return nil, 0, err
-	// }
-
 	return tasks, count, nil
-
-	// return users, count, nil
-
 }
 
 func (r *taskRepo) Update(task pb.Task) (pb.Task, error) {
@@ -164,7 +130,7 @@ func (r *taskRepo) Overdue(t string, limit, page int64) ([]*pb.Task, int64, erro
 		count int64
 	)
 	for rows.Next() {
-		var task  pb.Task
+		var task pb.Task
 		err = rows.Scan(&task.Id, &task.Assignee, &task.Title, &task.Summary, &task.Deadline, &task.Status)
 		if err != nil {
 			return nil, 0, err
@@ -172,7 +138,7 @@ func (r *taskRepo) Overdue(t string, limit, page int64) ([]*pb.Task, int64, erro
 		tasks = append(tasks, &task)
 	}
 
-	err = r.db.QueryRow(`SELECT count(*) FROM tasks`).Scan(&count)
+	err = r.db.QueryRow(`SELECT count(id) FROM tasks where deleted_at is null`).Scan(&count)
 	if err != nil {
 		return nil, 0, err
 	}

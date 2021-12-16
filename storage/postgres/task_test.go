@@ -17,14 +17,14 @@ func TestTaskRepo_Create(t *testing.T) {
 		{
 			name: "successful",
 			input: pb.Task{
-				Assignee: "Rustam",
+				Assignee: "Ructam",
 				Title:    "Turgunov",
 				Summary:  "summmary",
 				Deadline: "2020-10-10",
 				Status:   "active",
 			},
 			want: pb.Task{
-				Assignee: "Rustam",
+				Assignee: "Ructam",
 				Title:    "Turgunov",
 				Summary:  "summmary",
 				Deadline: "2020-10-10T00:00:00Z",
@@ -94,7 +94,7 @@ func TestTaskRepo_Update(t *testing.T) {
 			name: "successful",
 			input: pb.Task{
 				Id:       3,
-				Assignee: "Rustam",
+				Assignee: "Rustan",
 				Title:    "turgunov",
 				Summary:  "summmary",
 				Deadline: "2020-10-10",
@@ -102,7 +102,7 @@ func TestTaskRepo_Update(t *testing.T) {
 			},
 			want: pb.Task{
 				Id:       3,
-				Assignee: "Rustam",
+				Assignee: "Rustan",
 				Title:    "turgunov",
 				Summary:  "summmary",
 				Deadline: "2020-10-10T00:00:00Z",
@@ -127,15 +127,13 @@ func TestTaskRepo_Update(t *testing.T) {
 
 func TestTaskRepo_Delete(t *testing.T) {
 	tests := []struct {
-		name  string
-		input int64
-		// want    pb.EmptyRes
+		name    string
+		input   int64
 		wantErr bool
 	}{
 		{
-			name:  "successful",
-			input: 14,
-			// want:    pb.EmptyRes{},
+			name:    "successful",
+			input:   22,
 			wantErr: false,
 		},
 	}
@@ -174,7 +172,7 @@ func TestRepo_List(t *testing.T) {
 						Status:   "active",
 					},
 					{
-						Id:       9,
+						Id:       11,
 						Assignee: "Rustam",
 						Title:    "Turgunov",
 						Summary:  "summmary",
@@ -230,7 +228,7 @@ func TestRepo_Overdue(t *testing.T) {
 						Status:   "active",
 					},
 					{
-						Id:       9,
+						Id:       11,
 						Assignee: "Rustam",
 						Title:    "Turgunov",
 						Summary:  "summmary",
@@ -259,5 +257,4 @@ func TestRepo_Overdue(t *testing.T) {
 			}
 		})
 	}
-
 }
