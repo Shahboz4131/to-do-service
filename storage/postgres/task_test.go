@@ -204,3 +204,60 @@ func TestRepo_List(t *testing.T) {
 		})
 	}
 }
+
+func TestRepo_Overdue(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   pb.OverdueReq
+		want    pb.OverdueResp
+		wantErr bool
+	}{
+		{
+			name: "successful",
+			input: pb.OverdueReq{
+				Timed: "2021-10-09",
+				Page:  2,
+				Limit: 2,
+			},
+			want: pb.OverdueResp{
+				Overres: []*pb.Task{
+					{
+						Id:       8,
+						Assignee: "Rustam",
+						Title:    "Turgunov",
+						Summary:  "summmary",
+						Deadline: "2020-10-10T00:00:00Z",
+						Status:   "active",
+					},
+					{
+						Id:       9,
+						Assignee: "Rustam",
+						Title:    "Turgunov",
+						Summary:  "summmary",
+						Deadline: "2020-10-10T00:00:00Z",
+						Status:   "active",
+					},
+				},
+				Count: 47,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, count, err := pgRepo.Overdue(tc.input.Timed, tc.input.Page, tc.input.Limit)
+			tc.want.Count = count
+			if err != nil {
+				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.wantErr, err)
+			}
+			if !reflect.DeepEqual(tc.want, pb.OverdueResp{
+				Overres: got,
+				Count:   count,
+			}) {
+				t.Fatalf("%s: expected: %v, got: %v ", tc.name, tc.want, got)
+			}
+		})
+	}
+
+}
