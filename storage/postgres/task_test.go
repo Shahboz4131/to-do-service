@@ -236,7 +236,7 @@ func TestRepo_Overdue(t *testing.T) {
 						Status:   "active",
 					},
 				},
-				Count: 47,
+				Count: 51,
 			},
 			wantErr: false,
 		},
