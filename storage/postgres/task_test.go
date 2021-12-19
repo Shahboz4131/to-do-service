@@ -251,7 +251,7 @@ func TestRepo_Overdue(t *testing.T) {
 
 		tim, err := time.Parse(layout, tc.input.Timed)
 		if err != nil {
-			t.Fatalf("aaaa : %s type : %T", tc.input.Timed, tc.input.Timed)
+			t.Fatalf("time parsing error", err)
 		}
 
 		t.Run(tc.name, func(t *testing.T) {
