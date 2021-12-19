@@ -3,12 +3,14 @@ package postgres
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	pb "github.com/Shahboz4131/to-do-service/genproto"
 )
 
 func TestTaskRepo_Create(t *testing.T) {
 	tests := []struct {
+		id      string
 		name    string
 		input   pb.Task
 		want    pb.Task
@@ -17,6 +19,7 @@ func TestTaskRepo_Create(t *testing.T) {
 		{
 			name: "successful",
 			input: pb.Task{
+				Id:       "83cefcca-1c83-4337-93a3-35baf7a88cfd",
 				Assignee: "Ructam",
 				Title:    "Turgunov",
 				Summary:  "summmary",
@@ -24,11 +27,14 @@ func TestTaskRepo_Create(t *testing.T) {
 				Status:   "active",
 			},
 			want: pb.Task{
-				Assignee: "Ructam",
-				Title:    "Turgunov",
-				Summary:  "summmary",
-				Deadline: "2020-10-10T00:00:00Z",
-				Status:   "active",
+				Id:        "83cefcca-1c83-4337-93a3-35baf7a88cfd",
+				Assignee:  "Ructam",
+				Title:     "Turgunov",
+				Summary:   "summmary",
+				Deadline:  "2020-10-10T00:00:00Z",
+				Status:    "active",
+				CreatedAt: "",
+				UpdatedAt: "",
 			},
 			wantErr: false,
 		},
@@ -40,7 +46,9 @@ func TestTaskRepo_Create(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.wantErr, err)
 			}
-			got.Id = 0
+
+			got.CreatedAt = ""
+			got.UpdatedAt = ""
 			if !reflect.DeepEqual(tc.want, got) {
 				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.want, got)
 			}
@@ -51,20 +59,22 @@ func TestTaskRepo_Create(t *testing.T) {
 func TestTaskRepo_Get(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   int64
+		input   string
 		want    pb.Task
 		wantErr bool
 	}{
 		{
 			name:  "successful",
-			input: 8,
+			input: "83cefcca-1c83-4337-93a3-35baf7a88cfd",
 			want: pb.Task{
-				Id:       8,
-				Assignee: "Rustam",
-				Title:    "Turgunov",
-				Summary:  "summmary",
-				Deadline: "2020-10-10T00:00:00Z",
-				Status:   "active",
+				Id:        "83cefcca-1c83-4337-93a3-35baf7a88cfd",
+				Assignee:  "Ructam",
+				Title:     "Turgunov",
+				Summary:   "summmary",
+				Deadline:  "2020-10-10T00:00:00Z",
+				Status:    "active",
+				CreatedAt: "2021-12-19T05:16:03.898394Z",
+				UpdatedAt: "2021-12-19T05:16:03.898394Z",
 			},
 			wantErr: false,
 		},
@@ -93,20 +103,24 @@ func TestTaskRepo_Update(t *testing.T) {
 		{
 			name: "successful",
 			input: pb.Task{
-				Id:       3,
-				Assignee: "Rustan",
-				Title:    "turgunov",
-				Summary:  "summmary",
-				Deadline: "2020-10-10",
-				Status:   "active",
+				Id:        "83cefcca-1c83-4337-93a3-35baf7a88cfd",
+				Assignee:  "Ructam",
+				Title:     "Turgunov",
+				Summary:   "summmary",
+				Deadline:  "2020-10-10T00:00:00Z",
+				Status:    "actived",
+				CreatedAt: "2021-12-19T05:16:03.898394Z",
+				UpdatedAt: "",
 			},
 			want: pb.Task{
-				Id:       3,
-				Assignee: "Rustan",
-				Title:    "turgunov",
-				Summary:  "summmary",
-				Deadline: "2020-10-10T00:00:00Z",
-				Status:   "active",
+				Id:        "83cefcca-1c83-4337-93a3-35baf7a88cfd",
+				Assignee:  "Ructam",
+				Title:     "Turgunov",
+				Summary:   "summmary",
+				Deadline:  "2020-10-10T00:00:00Z",
+				Status:    "actived",
+				CreatedAt: "2021-12-19T05:16:03.898394Z",
+				UpdatedAt: "",
 			},
 			wantErr: false,
 		},
@@ -118,6 +132,7 @@ func TestTaskRepo_Update(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.wantErr, err)
 			}
+			got.UpdatedAt = ""
 			if !reflect.DeepEqual(tc.want, got) {
 				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.want, got)
 			}
@@ -128,12 +143,12 @@ func TestTaskRepo_Update(t *testing.T) {
 func TestTaskRepo_Delete(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   int64
+		input   string
 		wantErr bool
 	}{
 		{
 			name:    "successful",
-			input:   22,
+			input:   "83cefcca-1c83-4337-93a3-35baf7a88cfd",
 			wantErr: false,
 		},
 	}
@@ -158,29 +173,23 @@ func TestRepo_List(t *testing.T) {
 		{
 			name: "successful",
 			input: pb.ListReq{
-				Page:  2,
-				Limit: 2,
+				Page:  1,
+				Limit: 1,
 			},
 			want: pb.ListResp{
 				Tasks: []*pb.Task{
 					{
-						Id:       8,
-						Assignee: "Rustam",
-						Title:    "Turgunov",
-						Summary:  "summmary",
-						Deadline: "2020-10-10T00:00:00Z",
-						Status:   "active",
-					},
-					{
-						Id:       11,
-						Assignee: "Rustam",
-						Title:    "Turgunov",
-						Summary:  "summmary",
-						Deadline: "2020-10-10T00:00:00Z",
-						Status:   "active",
+						Id:        "83cefcca-1c83-4337-93a3-35baf7a88cfd",
+						Assignee:  "Ructam",
+						Title:     "Turgunov",
+						Summary:   "summmary",
+						Deadline:  "2020-10-10T00:00:00Z",
+						Status:    "actived",
+						CreatedAt: "2021-12-19T05:16:03.898394Z",
+						UpdatedAt: "2021-12-19T05:48:14.898872Z",
 					},
 				},
-				Count: 47,
+				Count: 1,
 			},
 			wantErr: false,
 		},
@@ -213,38 +222,40 @@ func TestRepo_Overdue(t *testing.T) {
 		{
 			name: "successful",
 			input: pb.OverdueReq{
-				Timed: "2021-10-09",
-				Page:  2,
-				Limit: 2,
+				Timed: "2022-10-10",
+				Page:  1,
+				Limit: 1,
 			},
 			want: pb.OverdueResp{
 				Overres: []*pb.Task{
 					{
-						Id:       8,
-						Assignee: "Rustam",
-						Title:    "Turgunov",
-						Summary:  "summmary",
-						Deadline: "2020-10-10T00:00:00Z",
-						Status:   "active",
-					},
-					{
-						Id:       11,
-						Assignee: "Rustam",
-						Title:    "Turgunov",
-						Summary:  "summmary",
-						Deadline: "2020-10-10T00:00:00Z",
-						Status:   "active",
+						Id:        "83cefcca-1c83-4337-93a3-35baf7a88cfd",
+						Assignee:  "Ructam",
+						Title:     "Turgunov",
+						Summary:   "summmary",
+						Deadline:  "2020-10-10T00:00:00Z",
+						Status:    "actived",
+						CreatedAt: "2021-12-19T05:16:03.898394Z",
+						UpdatedAt: "2021-12-19T05:48:14.898872Z",
 					},
 				},
-				Count: 51,
+				Count: 1,
 			},
 			wantErr: false,
 		},
 	}
 
 	for _, tc := range tests {
+
+		layout := "2006-01-02"
+
+		tim, err := time.Parse(layout, tc.input.Timed)
+		if err != nil {
+			t.Fatalf("aaaa : %s type : %T", tc.input.Timed, tc.input.Timed)
+		}
+
 		t.Run(tc.name, func(t *testing.T) {
-			got, count, err := pgRepo.Overdue(tc.input.Timed, tc.input.Page, tc.input.Limit)
+			got, count, err := pgRepo.Overdue(tim, tc.input.Page, tc.input.Limit)
 			tc.want.Count = count
 			if err != nil {
 				t.Fatalf("%s: expected: %v, got: %v", tc.name, tc.wantErr, err)

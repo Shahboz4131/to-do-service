@@ -2,13 +2,15 @@ package service
 
 import (
 	"context"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"time"
 
 	pb "github.com/Shahboz4131/to-do-service/genproto"
 	l "github.com/Shahboz4131/to-do-service/pkg/logger"
 	"github.com/Shahboz4131/to-do-service/storage"
+
+	"github.com/gofrs/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type TaskService struct {
@@ -25,6 +27,21 @@ func NewTaskService(storage storage.IStorage, log l.Logger) *TaskService {
 }
 
 func (s *TaskService) Create(ctx context.Context, req *pb.Task) (*pb.Task, error) {
+	id, err := uuid.NewV4()
+	if err != nil {
+		s.logger.Error("failed while generating uuid", l.Error(err))
+		return nil, status.Error(codes.Internal, "failed generate uuid")
+	}
+	layout := "2006-01-02"
+	_, err = time.Parse(layout, req.Deadline)
+
+	if err != nil {
+		s.logger.Error("failed while parsing deadlime", l.Error(err))
+		return nil, status.Error(codes.Internal, "failed parse deadline")
+	}
+
+	req.Id = id.String()
+
 	task, err := s.storage.Task().Create(*req)
 	if err != nil {
 		s.logger.Error("failed to create task", l.Error(err))
@@ -78,7 +95,15 @@ func (s *TaskService) Delete(ctx context.Context, req *pb.ByIdReq) (*pb.EmptyRes
 }
 
 func (s *TaskService) Overdue(ctx context.Context, req *pb.OverdueReq) (*pb.OverdueResp, error) {
-	tasks, count, err := s.storage.Task().Overdue(req.Timed, req.Limit, req.Page)
+	layout := "2006-01-02"
+
+	deadline, err := time.Parse(layout, req.Timed)
+	if err != nil {
+		s.logger.Error("failed while parsing deadlime", l.Error(err))
+		return nil, status.Error(codes.Internal, "failed parse deadline")
+	}
+
+	tasks, count, err := s.storage.Task().Overdue(deadline, req.Limit, req.Page)
 	if err != nil {
 		s.logger.Error("failed to list tasks", l.Error(err))
 		return nil, status.Error(codes.Internal, "failed to list tasks")
