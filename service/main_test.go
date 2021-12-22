@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"google.golang.org/grpc"
-
 	pb "github.com/Shahboz4131/to-do-service/genproto"
+
+	"google.golang.org/grpc"
 )
 
 var client pb.TaskServiceClient
